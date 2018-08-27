@@ -1,0 +1,71 @@
+. comment
+  . indexed addressing
+.. free format coding
+. empty line detection
+. . comand line user filenames input
+
+COPC START 		. program start here  .......
+.EO BYTE C'EOF'
+FIRST STL RETADR
+LDB #LENGTH
+BASE LENGTH1
+CLOOP +JSUB RDREC
+LDA LENGTH
++JSUB 	WRREC
+COMP #0
+JEQ ENDFIL
++JSUB 	WRREC 
++JSUB 	RDREC 
++JSUB 	WRREC 
+J CLOOP
+ENDFIL LDA EOF
+STA BUFFER
+LDA #3
+STA LENGTH
++JSUB WRREC
+J @RETADR
+EOF BYTE C'E1F'
+EOA BYTE C'EO5S'  ..........
+RETADR RESW 1   ......
+EOG BYTE C'EOF'
+LENGTH RESW 1
+DKSO RESW 1
+BUFFER RESB 4096
+TDJFO RESB 1  ....
+.
+.
+.
+RDREC CLEAR X    .. subroutine
+CLEAR A
+CLEAR S
++LDT #4096
+RLOOP TD INPUT
+JEQ RLOOP
+RD INPUT
+COMPR A,S
+JEQ EXIT
+AB STCH BUFFER ,X .
+TIXR T
+JLT RLOOP
+EXIT STX LENGTH 
+RSUB
+INPUT BYTE X'F1'
+
+.
+.
+.
+
+WRREC CLEAR X	. . subroutine
+LDT LENGTH
+WLOOP TD OUTPUT   ....
+JEQ WLOOP
+LDCH BUFFER, XX   .,x ....###
+WD OUTPUT   ....
+TIXR T 
+JLT WLOOP
+TEST RSUB OUTPUT
+OUTPUT RESB 1
+OOO BYTE X'08'  ....
+END FIRST
+
+.. . end of this program
